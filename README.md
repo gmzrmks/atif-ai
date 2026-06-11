@@ -97,12 +97,16 @@ kazandırdı. Sonuç, SciFact leaderboard'unda SciBERT-base ile elde edilen tipi
 - CUDA 12.8+ destekli NVIDIA GPU (RTX 5080 önerilen)
 - Windows 11 / Linux
 
-### Klonlama (Git LFS gerekli)
-Eğitilmiş model ağırlıkları (`*.bin`) Git LFS üzerinden saklanıyor. Klonlamadan önce:
+### Klonlama
 ```bash
-git lfs install                                  # bir kez yeterli
-git clone https://github.com/oguzhnsglm/makale.git
+git clone https://github.com/gmzrmks/atif-ai.git
 ```
+
+Eğitilmiş model ağırlıkları (`*.bin`) Google Drive'da saklanıyor.
+`models/` klasörüne indirip çıkart:
+**[Google Drive — model ağırlıkları](DRIVE_LINK_BURAYA)**
+
+Alternatif olarak notebook çalıştırılırsa (~2 saat) ağırlıklar otomatik oluşur.
 
 ### Kurulum
 ```bash

@@ -31,10 +31,6 @@ desktop.ini
 sunum/
 makale/
 
-# Model ağırlıkları
-*.bin
-*.safetensors
-
 # Cache tamamen ignored — `scripts/download_data.py` ve notebook ile yeniden üretilebilir
 cache/
 
