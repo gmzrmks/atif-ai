@@ -40,7 +40,7 @@ Her çift iki cümleden oluşur (öncül + hipotez) ve bir etiket taşır.
 | **SciFact (train)** | `allenai/scifact` | 1 463 | Bilimsel claim–abstract | Domain adaptation |
 | **SciFact (validation)** | `allenai/scifact` | 519 | Bilimsel claim–abstract | **Test** |
 
-Birleşik eğitim korpusu: **~559 563 çift**. SNLI (Flickr fotoğraf altyazıları) bilimsel
+Birleşik eğitim korpusu: **~554 563 çift**. SNLI (Flickr fotoğraf altyazıları) bilimsel
 domain'le alakası olmadığı için dahil edilmedi.
 
 ### Etiket normalizasyonu (kaynak → ortak 3-sınıf)
@@ -67,7 +67,7 @@ domain'le alakası olmadığı için dahil edilmedi.
 3. Fine-tune          2 epoch, batch=32, fp16, RTX 5080 (~2 saat)
 4. Test (genel)       SciFact validation üzerinde değerlendirme
 5. Yedek              Adaptation öncesi modeli ayrı klasöre kopyala
-6. Domain adaptation  SciFact train (1261) ile lr=1e-5, 3 epoch (~30 sn)
+6. Domain adaptation  SciFact train (1.463 çift) ile lr=1e-5, 3 epoch (~30 sn)
 7. Test (adapte)      SciFact üzerinde tekrar değerlendirme
 8. Kayıt              Final modeli models/contradiction_model/ altına yaz
 ```
