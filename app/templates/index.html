@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <title>Bilimsel Çelişki Tespit</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0c10;
+      --bg-elev: #11141a;
+      --card: #161a22;
+      --border: #232934;
+      --border-strong: #2e3543;
+      --txt: #e8eaed;
+      --txt-mut: #8b93a3;
+      --txt-dim: #5b6371;
+      --acc: #6ea8fe;
+      --acc-soft: rgba(110, 168, 254, 0.12);
+      --sup: #4ade80;
+      --neu: #fbbf24;
+      --con: #f87171;
+      --sup-soft: rgba(74, 222, 128, 0.12);
+      --neu-soft: rgba(251, 191, 36, 0.12);
+      --con-soft: rgba(248, 113, 113, 0.12);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--txt);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+    code, .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.9em; }
+
+    .wrap { max-width: 880px; margin: 0 auto; padding: 56px 24px 80px; }
+
+    .header { margin-bottom: 48px; }
+    .header h1 {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin: 0 0 8px;
+      background: linear-gradient(135deg, #e8eaed 0%, #8b93a3 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .header .sub { color: var(--txt-mut); font-size: 15px; }
+
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 16px;
+      border: 1px solid var(--border);
+    }
+
+    .field { margin-bottom: 20px; }
+    .field:last-child { margin-bottom: 0; }
+    .field-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--txt-mut);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 10px;
+    }
+    .field-hint {
+      font-size: 13px;
+      color: var(--txt-dim);
+      margin-top: 8px;
+      line-height: 1.5;
+    }
+
+    /* Custom select */
+    .select-wrap {
+      position: relative;
+    }
+    .select-wrap::after {
+      content: '';
+      position: absolute;
+      right: 16px; top: 50%;
+      width: 8px; height: 8px;
+      border-right: 2px solid var(--txt-mut);
+      border-bottom: 2px solid var(--txt-mut);
+      transform: translateY(-75%) rotate(45deg);
+      pointer-events: none;
+      transition: border-color .15s;
+    }
+    select {
+      width: 100%;
+      padding: 14px 40px 14px 16px;
+      background: var(--bg-elev);
+      color: var(--txt);
+      border: 1px solid var(--border-strong);
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      appearance: none;
+      transition: border-color .15s, background .15s;
+    }
+    select:hover { border-color: var(--acc); }
+    select:focus { outline: none; border-color: var(--acc); box-shadow: 0 0 0 3px var(--acc-soft); }
+    select:disabled { opacity: .4; cursor: not-allowed; }
+
+    /* Drop zone style file uploads */
+    .files-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .drop {
+      position: relative;
+      border: 1.5px dashed var(--border-strong);
+      border-radius: 12px;
+      padding: 24px 18px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color .15s, background .15s, transform .15s;
+      background: var(--bg-elev);
+      min-height: 130px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .drop:hover { border-color: var(--acc); background: var(--acc-soft); }
+    .drop.has-file { border-color: var(--sup); border-style: solid; background: var(--sup-soft); }
+    .drop.dragover { border-color: var(--acc); background: var(--acc-soft); transform: scale(1.01); }
+    .drop input[type=file] {
+      position: absolute; inset: 0;
+      opacity: 0; cursor: pointer;
+    }
+    .drop .icon {
+      width: 28px; height: 28px;
+      color: var(--txt-mut);
+      transition: color .15s;
+    }
+    .drop:hover .icon, .drop.has-file .icon { color: var(--acc); }
+    .drop.has-file .icon { color: var(--sup); }
+    .drop .title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--txt);
+    }
+    .drop .sub {
+      font-size: 12px;
+      color: var(--txt-dim);
+    }
+    .drop.has-file .filename {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--sup);
+      word-break: break-all;
+      padding: 0 8px;
+    }
+
+    /* Submit button */
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 16px;
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+    .meta-info { font-size: 12px; color: var(--txt-dim); flex: 1; }
+    button {
+      background: var(--acc);
+      color: #0a0c10;
+      border: 0;
+      padding: 12px 28px;
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform .1s, opacity .15s, box-shadow .15s;
+    }
+    button:hover:not(:disabled) {
+      box-shadow: 0 8px 24px -8px var(--acc);
+    }
+    button:active:not(:disabled) { transform: translateY(1px); }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+
+    /* Results */
+    .verdict-card {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      padding: 32px 28px;
+    }
+    .verdict-score {
+      font-size: 56px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+    .verdict-label-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+    .verdict-meta { font-size: 13px; color: var(--txt-dim); }
+
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .badge::before {
+      content: ''; width: 6px; height: 6px; border-radius: 50%;
+    }
+    .b-SUPPORT { background: var(--sup-soft); color: var(--sup); }
+    .b-SUPPORT::before { background: var(--sup); }
+    .b-NEUTRAL { background: var(--neu-soft); color: var(--neu); }
+    .b-NEUTRAL::before { background: var(--neu); }
+    .b-CONTRADICT { background: var(--con-soft); color: var(--con); }
+    .b-CONTRADICT::before { background: var(--con); }
+
+    .model-tag {
+      display: inline-block;
+      padding: 3px 10px;
+      background: var(--acc-soft);
+      color: var(--acc);
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-top: 6px;
+    }
+
+    .bars { display: grid; gap: 10px; margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border); }
+    .bar-row { display: grid; grid-template-columns: 110px 1fr 50px; gap: 14px; align-items: center; font-size: 13px; }
+    .bar-label { color: var(--txt-mut); font-weight: 500; font-size: 12px; letter-spacing: 0.04em; }
+    .bar-track { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 3px; transition: width .4s ease-out; }
+    .bar-pct { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; font-size: 12px; color: var(--txt-mut); }
+
+    .section-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--txt-mut);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin: 0 0 16px;
+    }
+
+    .pair {
+      background: var(--bg-elev);
+      padding: 16px 18px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      border-left: 3px solid var(--border-strong);
+      transition: border-color .15s;
+    }
+    .pair.l-CONTRADICT { border-left-color: var(--con); }
+    .pair.l-SUPPORT { border-left-color: var(--sup); }
+    .pair.l-NEUTRAL { border-left-color: var(--neu); }
+    .pair-meta { display: flex; align-items: center; gap: 10px; font-size: 11px; color: var(--txt-dim); margin-bottom: 10px; }
+    .pair-meta .pair-score { font-weight: 700; color: var(--txt); font-variant-numeric: tabular-nums; }
+    .pair-probs { font-family: 'JetBrains Mono', monospace; margin-left: auto; font-size: 11px; }
+    .pair p { margin: 6px 0; font-size: 13px; line-height: 1.6; }
+    .pair .lab { font-weight: 700; color: var(--txt-dim); margin-right: 6px; font-size: 11px; }
+    .pair .ta { color: var(--txt-mut); }
+    .pair .tb { color: var(--txt); }
+
+    .err {
+      background: var(--con-soft);
+      color: var(--con);
+      padding: 14px 18px;
+      border-radius: 10px;
+      border: 1px solid rgba(248, 113, 113, 0.25);
+      font-size: 14px;
+    }
+    .loading {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--txt-mut);
+      font-size: 14px;
+    }
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid var(--border);
+      border-top-color: var(--acc);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+    .fade-in { animation: fadeIn .3s ease-out; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+      <h1>Bilimsel Çelişki Tespit</h1>
+      <div class="sub">İki makaleyi yükle, model cümle-bazlı karşılaştırma yapsın.</div>
+    </div>
+
+    <form id="frm" class="card">
+      <div class="field">
+        <label class="field-label">Model</label>
+        <div class="select-wrap">
+          <select name="model" id="model">
+            {% for m in models %}
+            <option value="{{ m.key }}" {% if not m.available %}disabled{% endif %}>
+              {{ m.label }}{% if not m.available %} — eğitilmedi{% endif %}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label">Makaleler</label>
+        <div class="files-grid">
+          <label class="drop" id="drop-a">
+            <input type="file" name="file_a" accept=".pdf,.txt,.md" required>
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+            </svg>
+            <div>
+              <div class="title">Makale A</div>
+              <div class="sub">PDF, TXT veya MD seç</div>
+            </div>
+            <div class="filename" hidden></div>
+          </label>
+
+          <label class="drop" id="drop-b">
+            <input type="file" name="file_b" accept=".pdf,.txt,.md" required>
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+            </svg>
+            <div>
+              <div class="title">Makale B</div>
+              <div class="sub">PDF, TXT veya MD seç</div>
+            </div>
+            <div class="filename" hidden></div>
+          </label>
+        </div>
+      </div>
+
+      <div class="actions">
+        <span class="meta-info">Maksimum 25 MB · İlk 60 anlamlı cümle</span>
+        <button type="submit" id="btn">Karşılaştır</button>
+      </div>
+    </form>
+
+    <div id="status"></div>
+    <div id="result"></div>
+  </div>
+
+<script>
+const $ = (s, p = document) => p.querySelector(s);
+const $$ = (s, p = document) => Array.from(p.querySelectorAll(s));
+const frm = $("#frm");
+const btn = $("#btn");
+const status = $("#status");
+const result = $("#result");
+
+// File drop UX
+$$(".drop").forEach((drop) => {
+  const input = drop.querySelector("input[type=file]");
+  const fname = drop.querySelector(".filename");
+  const title = drop.querySelector(".title");
+  const sub = drop.querySelector(".sub");
+  const icon = drop.querySelector(".icon");
+
+  input.addEventListener("change", () => {
+    const f = input.files[0];
+    if (f) {
+      drop.classList.add("has-file");
+      title.style.display = "none";
+      sub.style.display = "none";
+      icon.style.display = "none";
+      fname.textContent = f.name;
+      fname.hidden = false;
+    } else {
+      drop.classList.remove("has-file");
+      title.style.display = ""; sub.style.display = ""; icon.style.display = "";
+      fname.hidden = true;
+    }
+  });
+
+  ["dragenter", "dragover"].forEach(ev =>
+    drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("dragover"); })
+  );
+  ["dragleave", "drop"].forEach(ev =>
+    drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("dragover"); })
+  );
+  drop.addEventListener("drop", (e) => {
+    if (e.dataTransfer.files.length) {
+      input.files = e.dataTransfer.files;
+      input.dispatchEvent(new Event("change"));
+    }
+  });
+});
+
+frm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  result.innerHTML = "";
+  const modelLabel = $("#model").options[$("#model").selectedIndex].text;
+  status.innerHTML = `<div class="card fade-in"><div class="loading">
+    <div class="spinner"></div>
+    <span>Model çalışıyor <span class="mono" style="color: var(--txt-dim);">— ${escapeHtml(modelLabel)}</span></span>
+  </div></div>`;
+  btn.disabled = true;
+  try {
+    const fd = new FormData(frm);
+    const r = await fetch("/api/compare", { method: "POST", body: fd });
+    const j = await r.json();
+    status.innerHTML = "";
+    if (j.error) {
+      result.innerHTML = `<div class="card fade-in"><div class="err">${escapeHtml(j.error)}</div></div>`;
+    } else {
+      result.innerHTML = render(j);
+    }
+  } catch (err) {
+    status.innerHTML = "";
+    result.innerHTML = `<div class="card fade-in"><div class="err">İstek başarısız: ${escapeHtml(err.message)}</div></div>`;
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+function barRow(label, val, color) {
+  const pct = Math.round(val * 100);
+  return `<div class="bar-row">
+    <div class="bar-label">${label}</div>
+    <div class="bar-track"><div class="bar-fill" style="width:${pct}%; background:${color}"></div></div>
+    <div class="bar-pct">${pct}%</div>
+  </div>`;
+}
+
+function render(j) {
+  const cls = "b-" + j.overall_label;
+  let html = `<div class="card fade-in" style="padding:0;">
+    <div class="verdict-card">
+      <div class="verdict-score">${(j.overall_score*100).toFixed(0)}<span style="font-size:0.5em;color:var(--txt-dim)">%</span></div>
+      <div style="flex:1;">
+        <div class="verdict-label-row">
+          <span class="badge ${cls}">${j.overall_label}</span>
+        </div>
+        <div class="verdict-meta">${j.n_sentences_a} × ${j.n_sentences_b} = ${j.n_pairs.toLocaleString()} cümle çifti</div>
+        <div class="model-tag">${escapeHtml(j.model_label)}</div>
+      </div>
+    </div>
+    <div style="padding: 0 28px 28px;">
+      <div class="bars">
+        ${barRow("SUPPORT", j.avg_p_support, "var(--sup)")}
+        ${barRow("NEUTRAL", j.avg_p_neutral, "var(--neu)")}
+        ${barRow("CONTRADICT", j.avg_p_contradict, "var(--con)")}
+      </div>
+      <div style="margin-top: 18px; font-size: 12px; color: var(--txt-dim); display: flex; gap: 16px;">
+        <span><span style="color:var(--txt-mut)">A:</span> ${escapeHtml(j.file_a)}</span>
+        <span><span style="color:var(--txt-mut)">B:</span> ${escapeHtml(j.file_b)}</span>
+      </div>
+    </div>
+  </div>`;
+
+  if (j.top_contradictions && j.top_contradictions.length) {
+    html += `<div class="card fade-in">
+      <h3 class="section-title">En Yüksek Çelişki Sinyalli Cümleler</h3>`;
+    for (const t of j.top_contradictions) {
+      html += `<div class="pair l-${t.label}">
+        <div class="pair-meta">
+          <span class="pair-score">${t.score}</span>
+          <span class="badge ${'b-' + t.label}" style="padding:2px 8px; font-size:10px;">${t.label}</span>
+          <span class="pair-probs">sup ${t.p_support} · neu ${t.p_neutral} · con ${t.p_contradict}</span>
+        </div>
+        <p class="ta"><span class="lab">A</span>${escapeHtml(t.sentence_a)}</p>
+        <p class="tb"><span class="lab">B</span>${escapeHtml(t.sentence_b)}</p>
+      </div>`;
+    }
+    html += `</div>`;
+  }
+  return html;
+}
+
+function escapeHtml(s) {
+  if (s == null) return "";
+  return String(s).replace(/[&<>"']/g, (c) => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  })[c]);
+}
+</script>
+</body>
+</html>

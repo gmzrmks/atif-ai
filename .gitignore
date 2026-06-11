@@ -1,0 +1,51 @@
+# Python ortam
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Logs / geçici
+pip.log
+*.log
+*.tmp
+*.bak
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ----- Proje özel -----
+
+# Sunum ve makale klasörleri
+sunum/
+makale/
+
+# Model ağırlıkları
+*.bin
+*.safetensors
+
+# Cache tamamen ignored — `scripts/download_data.py` ve notebook ile yeniden üretilebilir
+cache/
+
+# Trainer ara checkpoint'leri (final ağırlık zaten ana klasörde, bunlar çöp)
+models/**/checkpoint-*/
+models/**/_adapt/
+
+# Yedek modeller (lokalde sigorta amaçlı kalır, repo'ya gitmesin)
+models/contradiction_model_general/
+models/contradiction_model_scifact/
+models/contradiction_model_sci_general/
+
+# HuggingFace home cache (kullanıcı home'unda olabilir, proje değil ama yine de)
+.cache/

@@ -1,0 +1,14 @@
+{
+  "base_model": "./models/scibert",
+  "label2id": {
+    "SUPPORT": 0,
+    "NEUTRAL": 1,
+    "CONTRADICT": 2
+  },
+  "id2label": {
+    "0": "SUPPORT",
+    "1": "NEUTRAL",
+    "2": "CONTRADICT"
+  },
+  "max_length": 256
+}

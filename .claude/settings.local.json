@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx --version)",
+      "Bash(timeout 180 npx -y @marp-team/marp-cli@latest sunum/SUNUM.md -o sunum/SUNUM.pdf)",
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(timeout 120 npx -y @marp-team/marp-cli@latest --allow-local-files sunum/SUNUM.md -o sunum/_check/out.html)",
+      "Bash(.venv/Scripts/python.exe sunum/make_slide12.py)",
+      "Bash(.venv/Scripts/python.exe -c \"import docx; print\\('python-docx OK', docx.__version__\\)\")",
+      "Bash(.venv/Scripts/python.exe -m pip install python-docx --quiet)",
+      "Bash(.venv/Scripts/python.exe -c \"import docx; print\\('OK', docx.__version__\\)\")",
+      "Bash(.venv/Scripts/python.exe makale/make_paper.py)",
+      "Bash(.venv/Scripts/python.exe -c ' *)",
+      "Read(//c/Program Files/LibreOffice/program/**)",
+      "Bash(grep -iE \"models/|\\\\.bin$|scibert\")",
+      "Bash(git lfs *)",
+      "Bash(awk '{print $5, $NF}')"
+    ]
+  }
+}
