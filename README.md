@@ -102,11 +102,9 @@ kazandırdı. Sonuç, SciFact leaderboard'unda SciBERT-base ile elde edilen tipi
 git clone https://github.com/gmzrmks/atif-ai.git
 ```
 
-Eğitilmiş model ağırlıkları (`*.bin`) Google Drive'da saklanıyor.
-`models/` klasörüne indirip çıkart:
-**[Google Drive — model ağırlıkları](DRIVE_LINK_BURAYA)**
+Eğitilmiş model ağırlıkları (`*.bin`) Git LFS üzerinden saklanıyor, klonlama sırasında otomatik indirilir.
 
-Alternatif olarak notebook çalıştırılırsa (~2 saat) ağırlıklar otomatik oluşur.
+Alternatif olarak notebook çalıştırılırsa (~2 saat) ağırlıklar yeniden oluşur.
 
 ### Kurulum
 ```bash
